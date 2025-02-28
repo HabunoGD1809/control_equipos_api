@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: control_equipos_api
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_SERVER=db
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-control_equipos_db}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_SCHEMA=${POSTGRES_SCHEMA:-control_equipos}
+      - SECRET_KEY=${SECRET_KEY:-clave_secreta_muy_segura_para_produccion_minimo_32_caracteres}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - APPLY_MIGRATIONS=true
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - app-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: control_equipos_db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-control_equipos_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: control_equipos_pgadmin
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL:-admin@admin.com}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:-admin}
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+networks:
+  app-network:
+    driver: bridge

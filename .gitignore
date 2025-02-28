@@ -1,0 +1,123 @@
+# Entorno virtual 
+CtrlEquip/
+
+# Archivos y carpetas de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Extensiones C
+*.so
+
+# Archivos de entorno virtual
+env/
+venv/
+ENV/
+.venv/
+.virtualenv/
+
+# Archivos de configuración de entorno
+.env
+.env.*
+
+# Archivos de configuración de IDEs
+.vscode/
+.idea/
+
+# Archivos de registro
+*.log
+
+# Archivos de bases de datos locales
+*.sqlite3
+
+# Archivos de caché
+*.cache
+*.tmp
+*.temp
+
+# Archivos de pruebas y cobertura
+.coverage
+*.cover
+*.py,cover
+.hypothesis/
+.tox/
+.nox/
+.pytest_cache/
+.pytest_cache/
+
+# Archivos de distribución
+dist/
+build/
+*.egg-info/
+.eggs/
+parts/
+sdist/
+wheels/
+share/python-wheels/
+
+# Archivos de Alembic
+alembic/versions/
+
+# Archivos de Docker
+docker-compose.override.yml
+.dockerignore
+
+# Archivos de Sphinx (documentación)
+docs/_build/
+
+# Archivos de Jupyter Notebook
+.ipynb_checkpoints/
+
+# Archivos de Scrapy
+.scrapy/
+
+# Archivos de PyBuilder
+target/
+
+# Archivos de IPython
+profile_default/
+ipython_config.py
+
+# Archivos de pyenv
+.python-version
+
+# Archivos de Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Archivos de SageMath
+*.sage.py
+
+# Archivos de Spyder
+.spyderproject
+.spyproject
+
+# Archivos de Rope
+.ropeproject
+
+# Archivos de mkdocs
+/site
+
+# Archivos de mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Archivos de Pyre
+.pyre/
+
+# Archivos de configuración de control de versiones
+*.orig
+
+# Archivos de configuración de sistemas operativos
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Archivos de configuración de control de versiones
+*.orig
+
+# Archivos de configuración de sistemas operativos
+.DS_Store
+Thumbs.db
+Desktop.ini
