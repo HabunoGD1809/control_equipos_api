@@ -41,7 +41,7 @@ API REST moderna para gestionar equipos, movimientos, mantenimiento y documentac
 
 1. Clonar el repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/control-equipos.git
+   git clone https://github.com/HabunoGD1809/control-equipos.git
    cd control-equipos
    ```
 
