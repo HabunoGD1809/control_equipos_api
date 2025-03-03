@@ -62,7 +62,6 @@ API REST moderna para gestionar equipos, movimientos, mantenimiento y documentac
 4. Crear el archivo `.env` basado en `.env.example`:
    ```bash
    cp .env.example .env
-   # Editar .env con la configuración de tu entorno
    ```
 
 ### Configuración de la base de datos
