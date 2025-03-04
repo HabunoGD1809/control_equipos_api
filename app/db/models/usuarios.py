@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional, TYPE_CHECKING
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Table, Text, func
