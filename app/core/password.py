@@ -1,22 +1,15 @@
-from passlib.context import CryptContext
+import bcrypt
 
-# Configuración para hashing de contraseñas
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
+def get_password_hash(password: str) -> str:
+    """
+    Genera un hash seguro para la contraseña usando bcrypt.
+    """
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
+    return hashed.decode("utf-8")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
     Verifica si la contraseña en texto plano coincide con el hash almacenado.
     """
-    # La base de datos usa bcrypt para hashing que comienza con $2a$, $2b$ o $2y$
-    if not hashed_password.startswith(('$2a$', '$2b$', '$2y$')):
-        return False
-    
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password: str) -> str:
-    """
-    Genera un hash seguro para la contraseña.
-    """
-    return pwd_context.hash(password)
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
