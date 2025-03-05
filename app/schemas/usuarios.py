@@ -133,8 +133,8 @@ class Usuario(UsuarioBase):
     rol_id: uuid.UUID
     bloqueado: bool
     ultimo_login: Optional[datetime] = None
-    fecha_creacion: datetime
-    fecha_actualizacion: datetime
+    created_at: datetime
+    updated_at: datetime
     requiere_cambio_contrasena: bool
     rol: Optional[Rol] = None
     
@@ -165,7 +165,7 @@ class Notificacion(NotificacionBase):
     """Esquema para representar una notificación."""
     id: uuid.UUID
     leido: bool
-    fecha_creacion: datetime
+    created_at: datetime
     fecha_leido: Optional[datetime] = None
     
     class Config:

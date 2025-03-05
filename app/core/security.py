@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import uuid
 from typing import Any, Dict, Optional, Union
 
@@ -9,15 +9,17 @@ from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.core.password import verify_password  # Importamos desde password.py
 from app.db.session import get_db
 from app.schemas.token import TokenPayload
 
 # Configuración para autenticación
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/auth/login"
+    tokenUrl=f"{settings.API_V1_STR}/auth/login/form" 
+    
+    # El endpoint compatible con el formato de formulario 
+    # que Swagger necesita es /api/v1/auth/login/form 
+    
 )
-
 
 def create_access_token(
     subject: Union[str, Any], expires_delta: Optional[timedelta] = None

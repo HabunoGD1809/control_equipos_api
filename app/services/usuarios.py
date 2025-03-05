@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 from typing import Any, Dict, List, Optional, Union
 
@@ -379,7 +379,7 @@ async def get_user_notifications(
         query = query.where(Notificacion.leido == False)
     
     # Ordenar por fecha de creación (más recientes primero)
-    query = query.order_by(Notificacion.fecha_creacion.desc())
+    query = query.order_by(Notificacion.created_at.desc())
     
     # Ejecutar consulta
     result = await db.execute(query)
@@ -452,7 +452,7 @@ async def change_user_password(
     # Actualizar contraseña
     user.contrasena = get_password_hash(new_password)
     user.requiere_cambio_contrasena = False
-    user.fecha_actualizacion = datetime.now(timezone.utc)
+    user.updated_at = datetime.now(timezone.utc)
     
     await db.commit()
     

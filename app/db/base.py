@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from sqlalchemy import Column, DateTime, Text, func
@@ -52,24 +52,22 @@ class BaseModel(Base):
             if hasattr(self, key):
                 setattr(self, key, value)
 
+# class AuditableMixin:
+#     """
+#     Mixin para modelos que requieren auditoría.
+#     Agrega campos para seguimiento de cambios.
+#     """
+#     created_by = Column(UUID(as_uuid=True), nullable=True)
+#     updated_by = Column(UUID(as_uuid=True), nullable=True)
+#     deleted_at = Column(DateTime(timezone=True), nullable=True)
+#     deleted_by = Column(UUID(as_uuid=True), nullable=True)
+#     is_deleted = Column(DateTime(timezone=True), nullable=True)
 
-class AuditableMixin:
-    """
-    Mixin para modelos que requieren auditoría.
-    Agrega campos para seguimiento de cambios.
-    """
-    created_by = Column(UUID(as_uuid=True), nullable=True)
-    updated_by = Column(UUID(as_uuid=True), nullable=True)
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    deleted_by = Column(UUID(as_uuid=True), nullable=True)
-    is_deleted = Column(DateTime(timezone=True), nullable=True)
-
-    def soft_delete(self, user_id: Optional[uuid.UUID] = None) -> None:
-        """Realiza un borrado lógico del registro"""
-        self.deleted_at = datetime.now(timezone.utc)
-        self.deleted_by = user_id
-        self.is_deleted = True
-
+#     def soft_delete(self, user_id: Optional[uuid.UUID] = None) -> None:
+#         """Realiza un borrado lógico del registro"""
+#         self.deleted_at = datetime.now(timezone.utc)
+#         self.deleted_by = user_id
+#         self.is_deleted = True
 
 class SearchableMixin:
     """

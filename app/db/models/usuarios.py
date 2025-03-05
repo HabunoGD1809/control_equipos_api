@@ -6,7 +6,8 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, T
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, relationship
 
-from app.db.base import AuditableMixin, BaseModel
+from app.db.base import BaseModel
+#AuditableMixin,
 from app.db.session import Base
 
 if TYPE_CHECKING:
@@ -39,11 +40,28 @@ class Permiso(BaseModel):
         back_populates="permisos"
     )
     
+    # Descriptor personalizado para updated_at
+    @property
+    def updated_at(self):
+        """
+        Retorna created_at como fallback cuando se intenta acceder a updated_at.
+        
+        """
+        return self.created_at
+    
+    @updated_at.setter
+    def updated_at(self, value):
+        """
+        Ignora silenciosamente los intentos de asignar a updated_at
+        ya que esta columna no existe en la base de datos.
+        """
+        pass
+    
     def __repr__(self) -> str:
         return f"<Permiso {self.nombre}>"
 
 
-class Rol(BaseModel, AuditableMixin):
+class Rol(BaseModel): # , AuditableMixin
     """Modelo para los roles de usuario."""
     __tablename__ = "roles"
     
@@ -65,7 +83,7 @@ class Rol(BaseModel, AuditableMixin):
         return f"<Rol {self.nombre}>"
 
 
-class Usuario(BaseModel, AuditableMixin):
+class Usuario(BaseModel): # , AuditableMixin
     """Modelo para los usuarios del sistema."""
     __tablename__ = "usuarios"
     
@@ -78,8 +96,8 @@ class Usuario(BaseModel, AuditableMixin):
     intentos_fallidos = Column(Integer, default=0)
     bloqueado = Column(Boolean, default=False)
     ultimo_login = Column(DateTime(timezone=True), nullable=True)
-    fecha_creacion = Column(DateTime(timezone=True), server_default=func.now())
-    fecha_actualizacion = Column(DateTime(timezone=True), server_default=func.now(),
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(),
                                 onupdate=func.now())
     requiere_cambio_contrasena = Column(Boolean, default=True)
     
@@ -163,12 +181,30 @@ class LoginLog(BaseModel):
     exito = Column(Boolean)
     ip_origen = Column(String, nullable=True)
     
+    # Descriptores personalizados para evitar errores con created_at y updated_at
+    @property
+    def created_at(self):
+        """Retorna intento como fallback"""
+        return self.intento
+    
+    @created_at.setter
+    def created_at(self, value):
+        pass
+    
+    @property
+    def updated_at(self):
+        """Retorna intento como fallback"""
+        return self.intento
+    
+    @updated_at.setter
+    def updated_at(self, value):
+        pass
+    
     # Relaciones
     usuario: Mapped[Optional[Usuario]] = relationship("Usuario", back_populates="login_logs")
     
     def __repr__(self) -> str:
         return f"<LoginLog {'exitoso' if self.exito else 'fallido'} para {self.usuario_id}>"
-
 
 class Notificacion(BaseModel):
     """Modelo para notificaciones internas del sistema."""
@@ -177,7 +213,7 @@ class Notificacion(BaseModel):
     usuario_id = Column(UUID(as_uuid=True), ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False)
     mensaje = Column(Text, nullable=False)
     leido = Column(Boolean, default=False)
-    fecha_creacion = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     fecha_leido = Column(DateTime(timezone=True), nullable=True)
     
     # Relaciones

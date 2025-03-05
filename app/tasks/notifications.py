@@ -1,6 +1,6 @@
 import asyncio
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from sqlalchemy import select
@@ -42,7 +42,7 @@ async def send_notification(
             usuario_id=user_id,
             mensaje=message,
             leido=False,
-            fecha_creacion=datetime.now(timezone.utc)
+            created_at=datetime.now(timezone.utc)
         )
         
         session.add(notification)
@@ -124,7 +124,7 @@ async def mark_old_notifications_as_read(days: int = 30) -> None:
         # Buscar notificaciones antiguas no leídas
         stmt = select(Notificacion).where(
             Notificacion.leido == False,
-            Notificacion.fecha_creacion < cutoff_date
+            Notificacion.created_at < cutoff_date
         )
         result = await session.execute(stmt)
         notifications = result.scalars().all()

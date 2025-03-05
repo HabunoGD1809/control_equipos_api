@@ -5,7 +5,8 @@ from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Numeric, Str
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, relationship
 
-from app.db.base import AuditableMixin, BaseModel, SearchableMixin
+from app.db.base import BaseModel, SearchableMixin
+# AuditableMixin,
 
 if TYPE_CHECKING:
     from app.db.models.mantenimiento import Mantenimiento
@@ -29,7 +30,7 @@ class EstadoEquipo(BaseModel):
         return f"<EstadoEquipo {self.nombre}>"
 
 
-class Proveedor(BaseModel, AuditableMixin):
+class Proveedor(BaseModel): #, AuditableMixin
     """Modelo para los proveedores de equipos."""
     __tablename__ = "proveedores"
     
@@ -44,7 +45,7 @@ class Proveedor(BaseModel, AuditableMixin):
         return f"<Proveedor {self.nombre}>"
 
 
-class Equipo(BaseModel, AuditableMixin, SearchableMixin):
+class Equipo(BaseModel, SearchableMixin): #, AuditableMixin,
     """Modelo para los equipos."""
     __tablename__ = "equipos"
     
