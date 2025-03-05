@@ -6,7 +6,7 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, T
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, relationship
 
-from app.db.base import BaseModel
+from app.db.base import BaseModel, TimestampMixin
 #AuditableMixin,
 from app.db.session import Base
 
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 # Tabla de relación entre roles y permisos
 roles_permisos = Table(
     'roles_permisos',
-    Base.metadata,
+    Base.metadata, # 
     Column('rol_id', UUID(as_uuid=True), ForeignKey('roles.id', ondelete="CASCADE"), primary_key=True),
     Column('permiso_id', UUID(as_uuid=True), ForeignKey('permisos.id', ondelete="CASCADE"), primary_key=True),
     Column('otorgado_por', UUID(as_uuid=True), nullable=True),
@@ -26,7 +26,7 @@ roles_permisos = Table(
 )
 
 
-class Permiso(BaseModel):
+class Permiso(BaseModel, TimestampMixin.created_at()):
     """Modelo para los permisos del sistema."""
     __tablename__ = "permisos"
     
@@ -40,28 +40,11 @@ class Permiso(BaseModel):
         back_populates="permisos"
     )
     
-    # Descriptor personalizado para updated_at
-    @property
-    def updated_at(self):
-        """
-        Retorna created_at como fallback cuando se intenta acceder a updated_at.
-        
-        """
-        return self.created_at
-    
-    @updated_at.setter
-    def updated_at(self, value):
-        """
-        Ignora silenciosamente los intentos de asignar a updated_at
-        ya que esta columna no existe en la base de datos.
-        """
-        pass
-    
     def __repr__(self) -> str:
         return f"<Permiso {self.nombre}>"
 
 
-class Rol(BaseModel): # , AuditableMixin
+class Rol(BaseModel, TimestampMixin.with_timestamps()): # , AuditableMixin
     """Modelo para los roles de usuario."""
     __tablename__ = "roles"
     
@@ -83,7 +66,7 @@ class Rol(BaseModel): # , AuditableMixin
         return f"<Rol {self.nombre}>"
 
 
-class Usuario(BaseModel): # , AuditableMixin
+class Usuario(BaseModel, TimestampMixin.with_timestamps()): # , AuditableMixin
     """Modelo para los usuarios del sistema."""
     __tablename__ = "usuarios"
     
@@ -181,32 +164,13 @@ class LoginLog(BaseModel):
     exito = Column(Boolean)
     ip_origen = Column(String, nullable=True)
     
-    # Descriptores personalizados para evitar errores con created_at y updated_at
-    @property
-    def created_at(self):
-        """Retorna intento como fallback"""
-        return self.intento
-    
-    @created_at.setter
-    def created_at(self, value):
-        pass
-    
-    @property
-    def updated_at(self):
-        """Retorna intento como fallback"""
-        return self.intento
-    
-    @updated_at.setter
-    def updated_at(self, value):
-        pass
-    
     # Relaciones
     usuario: Mapped[Optional[Usuario]] = relationship("Usuario", back_populates="login_logs")
     
     def __repr__(self) -> str:
         return f"<LoginLog {'exitoso' if self.exito else 'fallido'} para {self.usuario_id}>"
 
-class Notificacion(BaseModel):
+class Notificacion(BaseModel, TimestampMixin.with_created_at()):
     """Modelo para notificaciones internas del sistema."""
     __tablename__ = "notificaciones"
     

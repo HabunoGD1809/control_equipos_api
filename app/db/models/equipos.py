@@ -5,6 +5,7 @@ from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Numeric, Str
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, relationship
 
+from app.db.base import TimestampMixin
 from app.db.base import BaseModel, SearchableMixin
 # AuditableMixin,
 
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
     from app.db.models.usuarios import Usuario
 
 
-class EstadoEquipo(BaseModel):
+class EstadoEquipo(BaseModel, TimestampMixin.with_created_at()):
     """Modelo para los estados de equipos."""
     __tablename__ = "estados_equipo"
     
@@ -30,7 +31,7 @@ class EstadoEquipo(BaseModel):
         return f"<EstadoEquipo {self.nombre}>"
 
 
-class Proveedor(BaseModel): #, AuditableMixin
+class Proveedor(BaseModel, TimestampMixin.created_at()): #, AuditableMixin
     """Modelo para los proveedores de equipos."""
     __tablename__ = "proveedores"
     
@@ -106,7 +107,7 @@ class Equipo(BaseModel, SearchableMixin): #, AuditableMixin,
         return self.fecha_garantia_expiracion >= date.today()
 
 
-class TipoDocumento(BaseModel):
+class TipoDocumento(BaseModel, TimestampMixin.with_created_at()):
     """Modelo para los tipos de documentos asociados a equipos."""
     __tablename__ = "tipos_documento"
     

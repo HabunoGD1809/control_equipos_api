@@ -1,6 +1,6 @@
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from datetime import datetime
+from typing import Any, Dict, Union
 
 from sqlalchemy import Column, DateTime, Text, func
 from sqlalchemy.dialects.postgresql import UUID
@@ -8,6 +8,50 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from app.db.session import Base
 
+class TimestampMixin:
+    """
+    Mixin: permite configurar qué campos timestamp se desean:
+    - created_at: timestamp de creación
+    - updated_at: timestamp de última actualización
+    """
+    created_at: Union[Column, None] = None
+    updated_at: Union[Column, None] = None
+
+    @classmethod
+    def with_created_at(cls):
+        """
+        Añade solo el campo created_at al modelo.
+        
+        Returns:
+            La clase con el campo created_at añadido.
+        """
+        cls.created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+        return cls
+
+    @classmethod
+    def with_updated_at(cls):
+        """
+        Añade solo el campo updated_at al modelo.
+        
+        Returns:
+            La clase con el campo updated_at añadido.
+        """
+        cls.updated_at = Column(DateTime(timezone=True), server_default=func.now(), 
+                                onupdate=func.now(), nullable=False)
+        return cls
+
+    @classmethod
+    def with_timestamps(cls):
+        """
+        Añade tanto created_at como updated_at al modelo.
+        
+        Returns:
+            La clase con ambos campos de timestamp.
+        """
+        cls.created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+        cls.updated_at = Column(DateTime(timezone=True), server_default=func.now(), 
+                                onupdate=func.now(), nullable=False)
+        return cls
 
 class BaseModel(Base):
     """
@@ -21,11 +65,8 @@ class BaseModel(Base):
     def __tablename__(cls) -> str:
         return cls.__name__.lower()
     
-    # Propiedades comunes para todos los modelos
+    # Solo el ID como campo común
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), 
-                        onupdate=func.now(), nullable=False)
     
     def __init__(self, **kwargs: Any) -> None:
         for key, value in kwargs.items():
