@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from app.db.models.usuarios import Usuario
 
 
-class EstadoEquipo(BaseModel, TimestampMixin.with_created_at()):
+class EstadoEquipo(BaseModel):
     """Modelo para los estados de equipos."""
     __tablename__ = "estados_equipo"
     
@@ -29,9 +29,11 @@ class EstadoEquipo(BaseModel, TimestampMixin.with_created_at()):
     
     def __repr__(self) -> str:
         return f"<EstadoEquipo {self.nombre}>"
+    
+    TimestampMixin.with_created_at()
 
 
-class Proveedor(BaseModel, TimestampMixin.created_at()): #, AuditableMixin
+class Proveedor(BaseModel):
     """Modelo para los proveedores de equipos."""
     __tablename__ = "proveedores"
     
@@ -44,6 +46,8 @@ class Proveedor(BaseModel, TimestampMixin.created_at()): #, AuditableMixin
     
     def __repr__(self) -> str:
         return f"<Proveedor {self.nombre}>"
+    
+    TimestampMixin.with_created_at()
 
 
 class Equipo(BaseModel, SearchableMixin): #, AuditableMixin,
@@ -107,7 +111,7 @@ class Equipo(BaseModel, SearchableMixin): #, AuditableMixin,
         return self.fecha_garantia_expiracion >= date.today()
 
 
-class TipoDocumento(BaseModel, TimestampMixin.with_created_at()):
+class TipoDocumento(BaseModel):
     """Modelo para los tipos de documentos asociados a equipos."""
     __tablename__ = "tipos_documento"
     
@@ -127,6 +131,8 @@ class TipoDocumento(BaseModel, TimestampMixin.with_created_at()):
         if not self.formato_permitido:
             return []
         return [f.strip() for f in self.formato_permitido.split(',')]
+    
+    TimestampMixin.with_created_at()
 
 
 class Documentacion(BaseModel, SearchableMixin):

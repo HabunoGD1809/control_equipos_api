@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Any, Dict, Union
+from typing import Any, Dict, Union, Callable, Type
 
 from sqlalchemy import Column, DateTime, Text, func
 from sqlalchemy.dialects.postgresql import UUID
@@ -18,39 +18,40 @@ class TimestampMixin:
     updated_at: Union[Column, None] = None
 
     @classmethod
-    def with_created_at(cls):
+    def with_created_at(cls) -> Type['TimestampMixin']:
         """
         Añade solo el campo created_at al modelo.
         
         Returns:
             La clase con el campo created_at añadido.
         """
-        cls.created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+        if not hasattr(cls, 'created_at'):
+            cls.created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
         return cls
 
     @classmethod
-    def with_updated_at(cls):
+    def with_updated_at(cls) -> Type['TimestampMixin']:
         """
         Añade solo el campo updated_at al modelo.
         
         Returns:
             La clase con el campo updated_at añadido.
         """
-        cls.updated_at = Column(DateTime(timezone=True), server_default=func.now(), 
-                                onupdate=func.now(), nullable=False)
+        if not hasattr(cls, 'updated_at'):
+            cls.updated_at = Column(DateTime(timezone=True), server_default=func.now(), 
+                                    onupdate=func.now(), nullable=False)
         return cls
 
     @classmethod
-    def with_timestamps(cls):
+    def with_timestamps(cls) -> Type['TimestampMixin']:
         """
         Añade tanto created_at como updated_at al modelo.
         
         Returns:
             La clase con ambos campos de timestamp.
         """
-        cls.created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-        cls.updated_at = Column(DateTime(timezone=True), server_default=func.now(), 
-                                onupdate=func.now(), nullable=False)
+        cls.with_created_at()
+        cls.with_updated_at()
         return cls
 
 class BaseModel(Base):

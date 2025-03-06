@@ -26,7 +26,7 @@ roles_permisos = Table(
 )
 
 
-class Permiso(BaseModel, TimestampMixin.created_at()):
+class Permiso(BaseModel):
     """Modelo para los permisos del sistema."""
     __tablename__ = "permisos"
     
@@ -42,9 +42,10 @@ class Permiso(BaseModel, TimestampMixin.created_at()):
     
     def __repr__(self) -> str:
         return f"<Permiso {self.nombre}>"
+    
+    TimestampMixin.with_created_at()
 
-
-class Rol(BaseModel, TimestampMixin.with_timestamps()): # , AuditableMixin
+class Rol(BaseModel):
     """Modelo para los roles de usuario."""
     __tablename__ = "roles"
     
@@ -64,9 +65,10 @@ class Rol(BaseModel, TimestampMixin.with_timestamps()): # , AuditableMixin
     
     def __repr__(self) -> str:
         return f"<Rol {self.nombre}>"
+    
+    TimestampMixin.with_timestamps()
 
-
-class Usuario(BaseModel, TimestampMixin.with_timestamps()): # , AuditableMixin
+class Usuario(BaseModel):
     """Modelo para los usuarios del sistema."""
     __tablename__ = "usuarios"
     
@@ -153,6 +155,9 @@ class Usuario(BaseModel, TimestampMixin.with_timestamps()): # , AuditableMixin
         """Limpia el token temporal después de su uso."""
         self.token_temporal = None
         self.token_expiracion = None
+    
+    # Añadir timestamps por defecto
+    TimestampMixin.with_timestamps()
 
 
 class LoginLog(BaseModel):
@@ -170,7 +175,8 @@ class LoginLog(BaseModel):
     def __repr__(self) -> str:
         return f"<LoginLog {'exitoso' if self.exito else 'fallido'} para {self.usuario_id}>"
 
-class Notificacion(BaseModel, TimestampMixin.with_created_at()):
+
+class Notificacion(BaseModel):
     """Modelo para notificaciones internas del sistema."""
     __tablename__ = "notificaciones"
     
@@ -190,3 +196,6 @@ class Notificacion(BaseModel, TimestampMixin.with_created_at()):
         """Marca la notificación como leída."""
         self.leido = True
         self.fecha_leido = datetime.now(timezone.utc)
+    
+    # Añadir created_at por defecto
+    TimestampMixin.with_created_at()
