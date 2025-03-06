@@ -31,7 +31,7 @@ router = APIRouter()
 @router.post("/login", response_model=Token)
 async def login(
     login_data: LoginRequest,
-    db: AsyncSession = Depends(get_db)  # Corregido: usar AsyncSession con Depends
+    db: DbSession
 ) -> Any:
     """
     Iniciar sesión en el sistema.
@@ -105,7 +105,7 @@ async def login(
 @router.post("/login/form", response_model=Token)
 async def login_form(
     form_data: OAuth2PasswordRequestForm = Depends(),
-    db: AsyncSession = Depends(get_db)  
+    db: AsyncSession = Depends(get_db)
 ) -> Any:
     """
     Iniciar sesión con el formulario estándar OAuth2.
@@ -174,7 +174,7 @@ async def login_form(
 @router.post("/password-reset", status_code=status.HTTP_200_OK)
 async def request_password_reset(
     reset_data: PasswordResetRequest,
-    db: AsyncSession = Depends(get_db)  # Corregido: Uso de AsyncSession con Depends
+    db: DbSession
 ) -> Any:
     """
     Solicitar restablecimiento de contraseña.
@@ -203,7 +203,7 @@ async def request_password_reset(
 @router.post("/password-reset/confirm", status_code=status.HTTP_200_OK)
 async def confirm_password_reset(
     reset_data: PasswordResetConfirm,
-    db: AsyncSession = Depends(get_db)  # Corregido: usar AsyncSession con Depends
+    db: DbSession
 ) -> Any:
     """
     Confirmar restablecimiento de contraseña.

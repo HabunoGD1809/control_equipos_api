@@ -83,7 +83,7 @@ async def get_current_user(
         # Validar la estructura del token
         token_data = TokenPayload(**payload)
         
-        if datetime.fromtimestamp(token_data.exp) < datetime.now(timezone.utc):
+        if datetime.fromtimestamp(token_data.exp) < datetime.now().replace(tzinfo=None):
             raise credentials_exception
             
         # Extraer el identificador del usuario

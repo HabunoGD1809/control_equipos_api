@@ -1,13 +1,17 @@
+from __future__ import annotations
 import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, TYPE_CHECKING
 
 from loguru import logger
 from pydantic import BaseModel
 
 from app.config import settings
+
+if TYPE_CHECKING:
+    from loguru import Logger
 
 # Configuración de formatos para diferentes niveles de log
 LOG_FORMAT = "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
@@ -107,7 +111,7 @@ def setup_logging() -> None:
     logger.info("Sistema de logging inicializado")
 
 
-def get_logger(name: Optional[str] = None) -> logger:
+def get_logger(name: Optional[str] = None) -> Logger:
     """
     Obtiene un logger configurado para un módulo específico.
     
