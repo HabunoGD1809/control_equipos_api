@@ -5,7 +5,7 @@ from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Numeric, Str
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, relationship
 
-from app.db.base import TimestampMixin
+from app.db.base import CreatedAtMixin
 from app.db.base import BaseModel, SearchableMixin
 # AuditableMixin,
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from app.db.models.usuarios import Usuario
 
 
-class EstadoEquipo(BaseModel):
+class EstadoEquipo(BaseModel, CreatedAtMixin):
     """Modelo para los estados de equipos."""
     __tablename__ = "estados_equipo"
     
@@ -29,11 +29,9 @@ class EstadoEquipo(BaseModel):
     
     def __repr__(self) -> str:
         return f"<EstadoEquipo {self.nombre}>"
-    
-    TimestampMixin.with_created_at()
 
 
-class Proveedor(BaseModel):
+class Proveedor(BaseModel, CreatedAtMixin):
     """Modelo para los proveedores de equipos."""
     __tablename__ = "proveedores"
     
@@ -47,8 +45,6 @@ class Proveedor(BaseModel):
     def __repr__(self) -> str:
         return f"<Proveedor {self.nombre}>"
     
-    TimestampMixin.with_created_at()
-
 
 class Equipo(BaseModel, SearchableMixin): #, AuditableMixin,
     """Modelo para los equipos."""
@@ -111,7 +107,7 @@ class Equipo(BaseModel, SearchableMixin): #, AuditableMixin,
         return self.fecha_garantia_expiracion >= date.today()
 
 
-class TipoDocumento(BaseModel):
+class TipoDocumento(BaseModel, CreatedAtMixin):
     """Modelo para los tipos de documentos asociados a equipos."""
     __tablename__ = "tipos_documento"
     
@@ -132,8 +128,6 @@ class TipoDocumento(BaseModel):
             return []
         return [f.strip() for f in self.formato_permitido.split(',')]
     
-    TimestampMixin.with_created_at()
-
 
 class Documentacion(BaseModel, SearchableMixin):
     """Modelo para documentos asociados a equipos."""

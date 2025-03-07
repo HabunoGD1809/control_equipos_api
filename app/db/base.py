@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Any, Dict, Union, Callable, Type
+from typing import Any, Dict
 
 from sqlalchemy import Column, DateTime, Text, func
 from sqlalchemy.dialects.postgresql import UUID
@@ -14,45 +14,34 @@ class TimestampMixin:
     - created_at: timestamp de creación
     - updated_at: timestamp de última actualización
     """
-    created_at: Union[Column, None] = None
-    updated_at: Union[Column, None] = None
+    
+    @declared_attr
+    def created_at(cls):
+        """Campo created_at añadido mediante declared_attr para funcionar con herencia."""
+        return Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    
+    @declared_attr
+    def updated_at(cls):
+        """Campo updated_at añadido mediante declared_attr para funcionar con herencia."""
+        return Column(DateTime(timezone=True), server_default=func.now(), 
+                      onupdate=func.now(), nullable=False)
 
-    @classmethod
-    def with_created_at(cls) -> Type['TimestampMixin']:
-        """
-        Añade solo el campo created_at al modelo.
-        
-        Returns:
-            La clase con el campo created_at añadido.
-        """
-        if not hasattr(cls, 'created_at'):
-            cls.created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-        return cls
+class CreatedAtMixin:
+    """Mixin que añade solo el campo created_at."""
+    
+    @declared_attr
+    def created_at(cls):
+        """Campo created_at añadido mediante declared_attr para funcionar con herencia."""
+        return Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
-    @classmethod
-    def with_updated_at(cls) -> Type['TimestampMixin']:
-        """
-        Añade solo el campo updated_at al modelo.
-        
-        Returns:
-            La clase con el campo updated_at añadido.
-        """
-        if not hasattr(cls, 'updated_at'):
-            cls.updated_at = Column(DateTime(timezone=True), server_default=func.now(), 
-                                    onupdate=func.now(), nullable=False)
-        return cls
-
-    @classmethod
-    def with_timestamps(cls) -> Type['TimestampMixin']:
-        """
-        Añade tanto created_at como updated_at al modelo.
-        
-        Returns:
-            La clase con ambos campos de timestamp.
-        """
-        cls.with_created_at()
-        cls.with_updated_at()
-        return cls
+class UpdatedAtMixin:
+    """Mixin que añade solo el campo updated_at."""
+    
+    @declared_attr
+    def updated_at(cls):
+        """Campo updated_at añadido mediante declared_attr para funcionar con herencia."""
+        return Column(DateTime(timezone=True), server_default=func.now(), 
+                      onupdate=func.now(), nullable=False)
 
 class BaseModel(Base):
     """

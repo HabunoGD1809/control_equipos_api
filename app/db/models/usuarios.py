@@ -6,7 +6,7 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, T
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, relationship
 
-from app.db.base import BaseModel, TimestampMixin
+from app.db.base import BaseModel, CreatedAtMixin, TimestampMixin
 #AuditableMixin,
 from app.db.session import Base
 
@@ -26,7 +26,7 @@ roles_permisos = Table(
 )
 
 
-class Permiso(BaseModel):
+class Permiso(BaseModel, CreatedAtMixin):
     """Modelo para los permisos del sistema."""
     __tablename__ = "permisos"
     
@@ -43,9 +43,8 @@ class Permiso(BaseModel):
     def __repr__(self) -> str:
         return f"<Permiso {self.nombre}>"
     
-    TimestampMixin.with_created_at()
-
-class Rol(BaseModel):
+    
+class Rol(BaseModel, TimestampMixin):
     """Modelo para los roles de usuario."""
     __tablename__ = "roles"
     
@@ -66,9 +65,8 @@ class Rol(BaseModel):
     def __repr__(self) -> str:
         return f"<Rol {self.nombre}>"
     
-    TimestampMixin.with_timestamps()
 
-class Usuario(BaseModel):
+class Usuario(BaseModel, TimestampMixin):
     """Modelo para los usuarios del sistema."""
     __tablename__ = "usuarios"
     
@@ -155,9 +153,6 @@ class Usuario(BaseModel):
         """Limpia el token temporal después de su uso."""
         self.token_temporal = None
         self.token_expiracion = None
-    
-    # Añadir timestamps por defecto
-    TimestampMixin.with_timestamps()
 
 
 class LoginLog(BaseModel):
@@ -176,7 +171,7 @@ class LoginLog(BaseModel):
         return f"<LoginLog {'exitoso' if self.exito else 'fallido'} para {self.usuario_id}>"
 
 
-class Notificacion(BaseModel):
+class Notificacion(BaseModel, CreatedAtMixin):
     """Modelo para notificaciones internas del sistema."""
     __tablename__ = "notificaciones"
     
@@ -197,5 +192,3 @@ class Notificacion(BaseModel):
         self.leido = True
         self.fecha_leido = datetime.now(timezone.utc)
     
-    # Añadir created_at por defecto
-    TimestampMixin.with_created_at()
