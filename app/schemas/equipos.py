@@ -67,7 +67,7 @@ class EstadoEquipo(EstadoEquipoBase):
 class EquipoBase(BaseModel):
     """Esquema base para equipos."""
     nombre: str = Field(..., min_length=3, max_length=100)
-    numero_serie: str = Field(..., pattern=r'^[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{3}$')
+    numero_serie: str = Field(..., pattern=r'^[A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+$')
     estado_id: uuid.UUID
     ubicacion_actual: Optional[str] = None
     marca: Optional[str] = None
@@ -101,7 +101,7 @@ class EquipoCreate(EquipoBase):
 class EquipoUpdate(BaseModel):
     """Esquema para actualizar un equipo."""
     nombre: Optional[str] = Field(None, min_length=3, max_length=100)
-    numero_serie: Optional[str] = Field(None, pattern=r'^[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{3}$')
+    numero_serie: Optional[str] = Field(None, pattern=r'^[A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+$')
     estado_id: Optional[uuid.UUID] = None
     ubicacion_actual: Optional[str] = None
     marca: Optional[str] = None

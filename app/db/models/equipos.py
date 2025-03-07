@@ -5,7 +5,7 @@ from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Numeric, Str
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, relationship
 
-from app.db.base import CreatedAtMixin
+from app.db.base import CreatedAtMixin, TimestampMixin
 from app.db.base import BaseModel, SearchableMixin
 # AuditableMixin,
 
@@ -46,7 +46,7 @@ class Proveedor(BaseModel, CreatedAtMixin):
         return f"<Proveedor {self.nombre}>"
     
 
-class Equipo(BaseModel, SearchableMixin): #, AuditableMixin,
+class Equipo(BaseModel, TimestampMixin, SearchableMixin): #, AuditableMixin,
     """Modelo para los equipos."""
     __tablename__ = "equipos"
     
@@ -129,7 +129,7 @@ class TipoDocumento(BaseModel, CreatedAtMixin):
         return [f.strip() for f in self.formato_permitido.split(',')]
     
 
-class Documentacion(BaseModel, SearchableMixin):
+class Documentacion(BaseModel, TimestampMixin, SearchableMixin):
     """Modelo para documentos asociados a equipos."""
     __tablename__ = "documentacion"
     
