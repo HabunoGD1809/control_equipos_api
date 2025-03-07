@@ -22,6 +22,9 @@ from app.services.usuarios import (
 
 router = APIRouter()
 
+# -------------------------------------------------------
+# RUTAS ESTÁTICAS PRIMERO (sin parámetros de ruta)
+# -------------------------------------------------------
 
 @router.get("/", response_model=PaginatedResponse[Usuario])
 async def list_usuarios(
@@ -76,6 +79,141 @@ async def create_usuario(
         id=usuario["id"],
         message="Usuario creado correctamente"
     )
+
+
+@router.get("/roles", response_model=ItemsResponse[Rol])
+async def list_roles(
+    db: DbSession,
+    current_user: AdminUser
+) -> Any:
+    """
+    Obtiene la lista de roles disponibles.
+    
+    Args:
+        db: Sesión de base de datos
+        current_user: Usuario autenticado
+    """
+    roles = await get_roles(db)
+    
+    return ItemsResponse(data=roles)
+
+
+@router.get("/permisos", response_model=ItemsResponse[Permiso])
+async def list_permisos(
+    db: DbSession,
+    current_user: AdminUser
+) -> Any:
+    """
+    Obtiene la lista de permisos disponibles.
+    
+    Args:
+        db: Sesión de base de datos
+        current_user: Usuario autenticado
+    """
+    permisos = await get_permisos(db)
+    
+    return ItemsResponse(data=permisos)
+
+
+@router.get("/me/profile", response_model=ItemResponse[Usuario])
+async def get_current_user_profile(
+    db: DbSession,
+    current_user: CurrentUser
+) -> Any:
+    """
+    Obtiene el perfil del usuario actual.
+    
+    Args:
+        db: Sesión de base de datos
+        current_user: Usuario autenticado
+    """
+    usuario = await get_user(db, current_user["id"])
+    
+    if not usuario:
+        raise NotFoundError("Usuario no encontrado")
+    
+    return ItemResponse(data=usuario)
+
+
+@router.put("/me/password", response_model=Mensaje)
+async def change_current_user_password(
+    db: DbSession,
+    current_user: CurrentUser,
+    password_in: UsuarioChangePassword
+) -> Any:
+    """
+    Cambia la contraseña del usuario actual.
+    
+    Args:
+        db: Sesión de base de datos
+        current_user: Usuario autenticado
+        password_in: Datos para cambio de contraseña
+    """
+    if password_in.confirmar_contrasena != password_in.nueva_contrasena:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Las contraseñas no coinciden"
+        )
+    
+    cambiada = await change_user_password(
+        db, 
+        current_user["id"], 
+        password_in.contrasena_actual, 
+        password_in.nueva_contrasena
+    )
+    
+    if not cambiada:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Contraseña actual incorrecta"
+        )
+    
+    return {"detail": "Contraseña actualizada correctamente"}
+
+
+@router.get("/me/notifications", response_model=ItemsResponse[Notificacion])
+async def get_current_user_notifications(
+    db: DbSession,
+    current_user: CurrentUser,
+    unread_only: bool = Query(False)
+) -> Any:
+    """
+    Obtiene las notificaciones del usuario actual.
+    
+    Args:
+        db: Sesión de base de datos
+        current_user: Usuario autenticado
+        unread_only: Si solo se deben devolver las notificaciones no leídas
+    """
+    notificaciones = await get_user_notifications(db, current_user["id"], unread_only)
+    
+    return ItemsResponse(data=notificaciones)
+
+
+# -------------------------------------------------------
+# RUTAS CON PARÁMETROS (después de las rutas estáticas)
+# -------------------------------------------------------
+
+@router.post("/me/notifications/{notification_id}/read", response_model=Mensaje)
+async def mark_notification_read(
+    db: DbSession,
+    current_user: CurrentUser,
+    notification_id: uuid.UUID = Path(...)
+) -> Any:
+    """
+    Marca una notificación como leída.
+    
+    Args:
+        db: Sesión de base de datos
+        current_user: Usuario autenticado
+        notification_id: ID de la notificación
+    """
+    notificacion = await mark_notification_as_read(db, notification_id)
+    
+    if not notificacion:
+        raise NotFoundError("Notificación no encontrada")
+    
+    return {"detail": "Notificación marcada como leída correctamente"}
 
 
 @router.get("/{usuario_id}", response_model=ItemResponse[Usuario])
@@ -159,134 +297,3 @@ async def delete_usuario(
         id=usuario_id,
         message="Usuario eliminado correctamente"
     )
-
-
-@router.get("/me/profile", response_model=ItemResponse[Usuario])
-async def get_current_user_profile(
-    db: DbSession,
-    current_user: CurrentUser
-) -> Any:
-    """
-    Obtiene el perfil del usuario actual.
-    
-    Args:
-        db: Sesión de base de datos
-        current_user: Usuario autenticado
-    """
-    usuario = await get_user(db, current_user["id"])
-    
-    if not usuario:
-        raise NotFoundError("Usuario no encontrado")
-    
-    return ItemResponse(data=usuario)
-
-
-@router.put("/me/password", response_model=Mensaje)
-async def change_current_user_password(
-    db: DbSession,
-    current_user: CurrentUser,
-    password_in: UsuarioChangePassword
-) -> Any:
-    """
-    Cambia la contraseña del usuario actual.
-    
-    Args:
-        db: Sesión de base de datos
-        current_user: Usuario autenticado
-        password_in: Datos para cambio de contraseña
-    """
-    if password_in.confirmar_contrasena != password_in.nueva_contrasena:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Las contraseñas no coinciden"
-        )
-    
-    cambiada = await change_user_password(
-        db, 
-        current_user["id"], 
-        password_in.contrasena_actual, 
-        password_in.nueva_contrasena
-    )
-    
-    if not cambiada:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Contraseña actual incorrecta"
-        )
-    
-    return {"detail": "Contraseña actualizada correctamente"}
-
-
-@router.get("/me/notifications", response_model=ItemsResponse[Notificacion])
-async def get_current_user_notifications(
-    db: DbSession,
-    current_user: CurrentUser,
-    unread_only: bool = Query(False)
-) -> Any:
-    """
-    Obtiene las notificaciones del usuario actual.
-    
-    Args:
-        db: Sesión de base de datos
-        current_user: Usuario autenticado
-        unread_only: Si solo se deben devolver las notificaciones no leídas
-    """
-    notificaciones = await get_user_notifications(db, current_user["id"], unread_only)
-    
-    return ItemsResponse(data=notificaciones)
-
-
-@router.post("/me/notifications/{notification_id}/read", response_model=Mensaje)
-async def mark_notification_read(
-    db: DbSession,
-    current_user: CurrentUser,
-    notification_id: uuid.UUID = Path(...)
-) -> Any:
-    """
-    Marca una notificación como leída.
-    
-    Args:
-        db: Sesión de base de datos
-        current_user: Usuario autenticado
-        notification_id: ID de la notificación
-    """
-    notificacion = await mark_notification_as_read(db, notification_id)
-    
-    if not notificacion:
-        raise NotFoundError("Notificación no encontrada")
-    
-    return {"detail": "Notificación marcada como leída correctamente"}
-
-
-@router.get("/roles", response_model=ItemsResponse[Rol])
-async def list_roles(
-    db: DbSession,
-    current_user: AdminUser
-) -> Any:
-    """
-    Obtiene la lista de roles disponibles.
-    
-    Args:
-        db: Sesión de base de datos
-        current_user: Usuario autenticado
-    """
-    roles = await get_roles(db)
-    
-    return ItemsResponse(data=roles)
-
-
-@router.get("/permisos", response_model=ItemsResponse[Permiso])
-async def list_permisos(
-    db: DbSession,
-    current_user: AdminUser
-) -> Any:
-    """
-    Obtiene la lista de permisos disponibles.
-    
-    Args:
-        db: Sesión de base de datos
-        current_user: Usuario autenticado
-    """
-    permisos = await get_permisos(db)
-    
-    return ItemsResponse(data=permisos)
