@@ -138,8 +138,6 @@ class Equipo(EquipoBase):
     """Esquema para representar un equipo."""
     id: uuid.UUID
     fecha_ultima_actualizacion: datetime
-    created_at: datetime
-    updated_at: datetime
     
     # Relaciones
     estado: Optional[EstadoEquipo] = None
