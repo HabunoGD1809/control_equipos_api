@@ -46,7 +46,7 @@ class Proveedor(BaseModel, CreatedAtMixin):
         return f"<Proveedor {self.nombre}>"
     
 
-class Equipo(BaseModel, TimestampMixin, SearchableMixin): #, AuditableMixin,
+class Equipo(BaseModel, SearchableMixin): #, AuditableMixin,
     """Modelo para los equipos."""
     __tablename__ = "equipos"
     
@@ -129,7 +129,7 @@ class TipoDocumento(BaseModel, CreatedAtMixin):
         return [f.strip() for f in self.formato_permitido.split(',')]
     
 
-class Documentacion(BaseModel, TimestampMixin, SearchableMixin):
+class Documentacion(BaseModel, SearchableMixin):
     """Modelo para documentos asociados a equipos."""
     __tablename__ = "documentacion"
     

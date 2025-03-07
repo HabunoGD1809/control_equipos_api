@@ -86,11 +86,9 @@ class Movimiento(MovimientoBase):
 
 class MovimientoConDetalles(Movimiento):
     """Esquema para representar un movimiento con detalles adicionales."""
-    equipo_nombre: str
-    equipo_numero_serie: str
-    usuario_nombre: Optional[str] = None
-    autorizado_por_nombre: Optional[str] = None
-    estado_equipo: str
+    equipo: Optional[dict] = None  
+    usuario: Optional[dict] = None  
+    autorizado_por_usuario: Optional[dict] = None
     retrasado: bool = False
     dias_restantes: Optional[int] = None
     

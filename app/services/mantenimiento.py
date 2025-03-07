@@ -182,6 +182,9 @@ async def get_mantenimiento(
             "nombre": mantenimiento.equipo.nombre,
             "numero_serie": mantenimiento.equipo.numero_serie
         }
+        # Añadir campos planos requeridos por el esquema
+        mant_dict["equipo_nombre"] = mantenimiento.equipo.nombre
+        mant_dict["equipo_numero_serie"] = mantenimiento.equipo.numero_serie
         
     if mantenimiento.tipo_mantenimiento:
         mant_dict["tipo_mantenimiento"] = {
@@ -189,6 +192,8 @@ async def get_mantenimiento(
             "nombre": mantenimiento.tipo_mantenimiento.nombre,
             "periodicidad_dias": mantenimiento.tipo_mantenimiento.periodicidad_dias
         }
+        # Añadir campo plano requerido por el esquema
+        mant_dict["tipo_mantenimiento_nombre"] = mantenimiento.tipo_mantenimiento.nombre
         
     # Calcular información adicional
     mant_dict["vencido"] = False
@@ -282,6 +287,9 @@ async def get_mantenimientos(
                 "nombre": mant.equipo.nombre,
                 "numero_serie": mant.equipo.numero_serie
             }
+            # Añadir campos planos requeridos por el esquema
+            mant_dict["equipo_nombre"] = mant.equipo.nombre
+            mant_dict["equipo_numero_serie"] = mant.equipo.numero_serie
             
         if mant.tipo_mantenimiento:
             mant_dict["tipo_mantenimiento"] = {
@@ -289,6 +297,8 @@ async def get_mantenimientos(
                 "nombre": mant.tipo_mantenimiento.nombre,
                 "periodicidad_dias": mant.tipo_mantenimiento.periodicidad_dias
             }
+            # Añadir campo plano requerido por el esquema
+            mant_dict["tipo_mantenimiento_nombre"] = mant.tipo_mantenimiento.nombre
             
         # Calcular información adicional
         mant_dict["vencido"] = False
@@ -566,12 +576,17 @@ async def get_proximos_mantenimientos(
                 "nombre": mant.equipo.nombre,
                 "numero_serie": mant.equipo.numero_serie
             }
+            # Añadir campos planos requeridos por el esquema
+            mant_dict["equipo_nombre"] = mant.equipo.nombre
+            mant_dict["equipo_numero_serie"] = mant.equipo.numero_serie
             
         if mant.tipo_mantenimiento:
             mant_dict["tipo_mantenimiento"] = {
                 "id": mant.tipo_mantenimiento.id,
                 "nombre": mant.tipo_mantenimiento.nombre
             }
+            # Añadir campo plano requerido por el esquema
+            mant_dict["tipo_mantenimiento_nombre"] = mant.tipo_mantenimiento.nombre
             
         # Calcular días restantes
         dias_restantes = (mant.fecha_mantenimiento - datetime.now(timezone.utc)).days
