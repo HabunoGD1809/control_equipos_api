@@ -24,6 +24,7 @@ control_equipos/
 │   │   ├── error_handlers.py      # Manejadores de errores personalizados
 │   │   ├── logging.py             # Configuración de logging
 │   │   ├── security.py            # Autenticación JWT y hashing
+│   │   ├── password.py            # Manejo de hashing y verificación de contraseñas con bcrypt
 │   │   └── __init__.py            # Inicialización del módulo
 │   │
 │   ├── db/                        # Capa de acceso a datos
@@ -106,7 +107,7 @@ control_equipos/
 Contiene los endpoints de la API organizados por funcionalidad. Cada archivo en `routes/` define un conjunto de endpoints relacionados con una entidad específica (usuarios, equipos, etc.).
 
 ### Core (app/core)
-Contiene la funcionalidad central de la aplicación, como seguridad, manejo de errores y configuración de logging.
+Contiene la lógica central de la aplicación, incluyendo manejo de errores, configuración de logging, seguridad (autenticación y autorización), y funciones para el manejo seguro de contraseñas.
 
 ### DB (app/db)
 Contiene los modelos SQLAlchemy que definen el esquema de la base de datos y la lógica para gestionar las conexiones.
